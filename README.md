@@ -39,3 +39,18 @@ npx drizzle-kit push
 ```bash
 curl -X POST http://localhost:3000/api/seed
 ```
+
+5. Access the database viewer (Adminer)
+
+Adminer is included for easy database management and viewing. After starting the services with `docker compose up`, you can access it at:
+
+**URL:** http://localhost:8080
+
+**Connection Details:**
+- System: PostgreSQL
+- Server: db
+- Username: postgres  
+- Password: password
+- Database: solaceassignment
+
+Adminer provides a web-based interface to view tables, run queries, and manage your PostgreSQL database.
