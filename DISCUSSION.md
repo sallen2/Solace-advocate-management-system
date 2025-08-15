@@ -29,3 +29,19 @@ I utilized AI assistance strategically throughout this project, primarily for:
 - **Code improvements**: Some code refactoring and optimization tasks
 
 The majority of architectural decisions, design choices, and core development logic were driven by my own analysis and experience, with AI serving as a productivity tool for documentation and consistency.
+
+## Database Tools
+
+### Adminer Database Viewer
+
+Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
+
+**Access:** http://localhost:8080 after `docker compose up`
+
+**Connection:**
+
+- System: PostgreSQL
+- Server: db
+- Username: postgres
+- Password: password
+- Database: solaceassignment
