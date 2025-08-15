@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Advocate } from "../types/advocate";
+import AdvocatesTable from "../components/AdvocatesTable";
+import SearchInput from "../components/SearchInput";
 
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
@@ -63,6 +65,7 @@ export default function Home() {
   };
 
   const handleResetSearchClick = () => {
+    setSearchTerm("");
     setFilteredAdvocates(advocates);
   };
 
@@ -70,91 +73,13 @@ export default function Home() {
     <main className="container mx-auto px-6 py-8 max-w-6xl">
       <h1 className="text-3xl font-bold text-center mb-8">Solace Advocates</h1>
 
-      <div className="mb-8 bg-gray-50 p-6 rounded-lg">
-        <h2 className="text-lg font-semibold mb-4">Search</h2>
-        <p className="mb-2 text-sm text-gray-600">
-          Searching for: <span id="search-term" className="font-medium"></span>
-        </p>
-        <div className="flex gap-4 items-center">
-          <input
-            className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            onChange={handleFilteringAdvocates}
-            placeholder="Search advocates..."
-          />
-          <button
-            onClick={handleResetSearchClick}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
-          >
-            Reset Search
-          </button>
-        </div>
-      </div>
+      <SearchInput
+        searchTerm={searchTerm}
+        onSearchChange={handleFilteringAdvocates}
+        onResetSearch={handleResetSearchClick}
+      />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                First Name
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Last Name
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                City
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Degree
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Specialties
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Years of Experience
-              </th>
-              <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Phone Number
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAdvocates.map((advocate) => {
-              return (
-                <tr
-                  key={advocate.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.firstName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.lastName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.city}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.degree}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.specialties.map((s, i) => (
-                      <div key={i} className="mb-1 last:mb-0">
-                        {s}
-                      </div>
-                    ))}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.yearsOfExperience}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3 text-sm">
-                    {advocate.phoneNumber}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <AdvocatesTable advocates={filteredAdvocates} />
     </main>
   );
 }
