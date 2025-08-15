@@ -1,12 +1,32 @@
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
-import { advocateData } from "../../../db/seed/advocates";
 
-export async function GET() {
+// Type definitions based on database schema
+interface Advocate {
+  id: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+  createdAt: Date | null;
+}
+
+interface AdvocatesApiResponse {
+  data: Advocate[];
+}
+
+export async function GET(): Promise<Response> {
   // Uncomment this line to use a database
-  const data = await db.select().from(advocates);
+  const rawAdvocateData = await db.select().from(advocates);
+  
+  // Transform the data to ensure proper typing for specialties field
+  const advocateData: Advocate[] = rawAdvocateData.map(advocate => ({
+    ...advocate,
+    specialties: advocate.specialties as string[]
+  }));
 
-  const data = advocateData;
-
-  return Response.json({ data });
+  return Response.json({ data: advocateData } satisfies AdvocatesApiResponse);
 }
