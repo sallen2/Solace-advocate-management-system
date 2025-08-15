@@ -30,6 +30,23 @@ I utilized AI assistance strategically throughout this project, primarily for:
 
 The majority of architectural decisions, design choices, and core development logic were driven by my own analysis and experience, with AI serving as a productivity tool for documentation and consistency.
 
+## Future Improvements
+
+The following enhancements would further improve the application's quality and user experience:
+
+**Testing Infrastructure:**
+
+- Unit tests for AdvocatesTable and SearchInput components using Jest and React Testing Library
+
+**Layout & Design System:**
+
+- Proper layout component with consistent header, footer, and navigation structure
+- Loading states and skeleton components during data fetching
+
+**Enhanced Styling & UX:**
+
+- More visual flair with subtle animations and micro-interactions
+
 ### Adminer Database Viewer
 
 Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
