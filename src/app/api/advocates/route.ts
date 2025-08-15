@@ -1,18 +1,6 @@
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
-
-// Type definitions based on database schema
-interface Advocate {
-  id: number;
-  firstName: string;
-  lastName: string;
-  city: string;
-  degree: string;
-  specialties: string[];
-  yearsOfExperience: number;
-  phoneNumber: number;
-  createdAt: Date | null;
-}
+import { Advocate } from "../../../types/advocate";
 
 interface AdvocatesApiResponse {
   data: Advocate[];
