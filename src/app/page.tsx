@@ -118,7 +118,7 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {filteredAdvocates.map((advocate, index) => {
+            {filteredAdvocates.map((advocate) => {
               return (
                 <tr
                   key={advocate.id}
