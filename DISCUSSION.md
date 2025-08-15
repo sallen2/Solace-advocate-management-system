@@ -30,6 +30,27 @@ I utilized AI assistance strategically throughout this project, primarily for:
 
 The majority of architectural decisions, design choices, and core development logic were driven by my own analysis and experience, with AI serving as a productivity tool for documentation and consistency.
 
+## Future Improvements
+
+The following enhancements would further improve the application's quality and user experience:
+
+**Testing Infrastructure:**
+
+- Unit tests for AdvocatesTable and SearchInput components using Jest and React Testing Library
+
+**Layout & Design System:**
+
+- Proper layout component with consistent header, footer, and navigation structure
+- Loading states and skeleton components during data fetching
+- Implement lazy loading/pagination to avoid displaying all advocates at once
+- Implement search with debounce and move search logic to backend for better performance and scalability
+
+**Enhanced Styling & UX:**
+
+- More visual flair with subtle animations and micro-interactions
+- Implement semantic HTML elements (header, nav, main, section, article, aside, footer) for better accessibility
+- Format phone numbers for better readability (e.g., (555) 123-4567)
+
 ### Adminer Database Viewer
 
 Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
