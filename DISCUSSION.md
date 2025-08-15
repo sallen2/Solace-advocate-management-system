@@ -17,10 +17,7 @@ I structured my development process around realistic team workflows, considering
 
 - Feature branch development
 - Code review processes
-- Safe integration practices
 - Production deployment workflows
-
-This approach demonstrates awareness of collaborative development practices and maintains clean project history.
 
 ### AI Tool Usage
 
@@ -42,6 +39,7 @@ Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL d
 **Access:** http://localhost:8080 after `docker compose up`
 
 **Connection:**
+
 - System: PostgreSQL
 - Server: db
 - Username: postgres
