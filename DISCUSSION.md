@@ -46,6 +46,7 @@ The following enhancements would further improve the application's quality and u
 **Enhanced Styling & UX:**
 
 - More visual flair with subtle animations and micro-interactions
+- Implement semantic HTML elements (header, nav, main, section, article, aside, footer) for better accessibility
 
 ### Adminer Database Viewer
 
