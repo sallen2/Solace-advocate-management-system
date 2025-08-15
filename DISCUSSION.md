@@ -30,8 +30,6 @@ I utilized AI assistance strategically throughout this project, primarily for:
 
 The majority of architectural decisions, design choices, and core development logic were driven by my own analysis and experience, with AI serving as a productivity tool for documentation and consistency.
 
-## Database Tools
-
 ### Adminer Database Viewer
 
 Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
@@ -84,3 +82,25 @@ Refactored API data fetching by extracting fetch logic from useEffect into a ded
 - Modern JavaScript best practices
 - Reusable fetch function for future needs
 - Improved code readability and maintainability
+
+#### UI Styling with Tailwind CSS
+
+Replaced all inline styles with Tailwind CSS utility classes and implemented a modern, responsive design system.
+
+**Changes:**
+
+- Replaced all inline `style` props with proper Tailwind CSS classes
+- Implemented centered responsive container layout with proper spacing
+- Created modern search interface with card-like design and interactive elements
+- Added comprehensive table styling with borders, hover effects, and mobile responsiveness
+- Removed HTML `<br>` tags in favor of CSS margin/padding classes
+- Added focus states, transitions, and hover effects for better UX
+
+**Benefits:**
+
+- Modern, professional appearance with consistent design system
+- Fully responsive design that works across all device sizes
+- Better maintainability with centralized styling approach
+- Improved accessibility with proper focus states and color contrast
+- Enhanced performance by eliminating inline styles
+- Easier design updates and customization through utility classes

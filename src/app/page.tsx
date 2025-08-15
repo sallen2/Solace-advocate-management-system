@@ -120,7 +120,10 @@ export default function Home() {
           <tbody>
             {filteredAdvocates.map((advocate, index) => {
               return (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={advocate.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
                   <td className="border border-gray-300 px-4 py-3 text-sm">
                     {advocate.firstName}
                   </td>
