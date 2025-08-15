@@ -43,6 +43,7 @@ The following enhancements would further improve the application's quality and u
 - Proper layout component with consistent header, footer, and navigation structure
 - Loading states and skeleton components during data fetching
 - Implement lazy loading/pagination to avoid displaying all advocates at once
+- Implement search with debounce and move search logic to backend for better performance and scalability
 
 **Enhanced Styling & UX:**
 
