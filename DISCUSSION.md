@@ -45,3 +45,42 @@ Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL d
 - Username: postgres
 - Password: password
 - Database: solaceassignment
+
+### Code Quality Improvements
+
+#### Refactored Filter Logic and State Management
+
+Improved advocates search functionality by extracting filter logic and replacing DOM manipulation with React state.
+
+**Changes:**
+
+- Created `matchesSearchTerm` function for reusable filtering logic
+- Added proper TypeScript types with `Advocate` interface
+- Replaced `document.getElementById` with React state for search term display
+- Fixed type issues with `yearsOfExperience` and `specialties` array filtering
+- Renamed `onChange` to `handleFilteringAdvocates` for better code clarity
+
+**Benefits:**
+
+- Better code organization and reusability
+- Improved type safety with TypeScript
+- React best practices (no direct DOM manipulation)
+- Case-insensitive search functionality
+
+#### Extracted Data Fetching Logic
+
+Refactored API data fetching by extracting fetch logic from useEffect into a dedicated async function with proper error handling.
+
+**Changes:**
+
+- Created `fetchAvailableAdvocates` async function with try-catch error handling
+- Replaced promise chains with modern async/await syntax
+- Added response status validation with descriptive error messages
+- Implemented proper error logging for debugging
+
+**Benefits:**
+
+- Better error handling and user feedback
+- Modern JavaScript best practices
+- Reusable fetch function for future needs
+- Improved code readability and maintainability

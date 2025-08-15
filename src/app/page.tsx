@@ -1,43 +1,68 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Advocate } from "../types/advocate";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Fetch available advocates from the API
+  const fetchAvailableAdvocates = async (): Promise<void> => {
+    try {
+      const response = await fetch("/api/advocates");
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch advocates: ${response.status}`);
+      }
+      
+      const jsonResponse = await response.json();
+      setAdvocates(jsonResponse.data);
+      setFilteredAdvocates(jsonResponse.data);
+    } catch (error) {
+      console.error("Error fetching advocates:", error);
+      // Could add error state here in the future
+    }
+  };
 
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    fetchAvailableAdvocates();
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
+  // Filter function to check if an advocate matches the search term
+  const matchesSearchTerm = (
+    advocate: Advocate,
+    searchTerm: string
+  ): boolean => {
+    if (!searchTerm) return true;
 
-    document.getElementById("search-term").innerHTML = searchTerm;
+    const lowerSearchTerm = searchTerm.toLowerCase();
 
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
-      );
-    });
+    return (
+      advocate.firstName.toLowerCase().includes(lowerSearchTerm) ||
+      advocate.lastName.toLowerCase().includes(lowerSearchTerm) ||
+      advocate.city.toLowerCase().includes(lowerSearchTerm) ||
+      advocate.degree.toLowerCase().includes(lowerSearchTerm) ||
+      advocate.specialties.some((specialty) =>
+        specialty.toLowerCase().includes(lowerSearchTerm)
+      ) ||
+      advocate.yearsOfExperience.toString().includes(searchTerm)
+    );
+  };
+
+  const handleFilteringAdvocates = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+
+    const filteredAdvocates = advocates.filter((advocate) =>
+      matchesSearchTerm(advocate, newSearchTerm)
+    );
 
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
-    console.log(advocates);
+  const handleResetSearchClick = () => {
     setFilteredAdvocates(advocates);
   };
 
@@ -49,10 +74,13 @@ export default function Home() {
       <div>
         <p>Search</p>
         <p>
-          Searching for: <span id="search-term"></span>
+          Searching for: <span>{searchTerm}</span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <input
+          style={{ border: "1px solid black" }}
+          onChange={handleFilteringAdvocates}
+        />
+        <button onClick={handleResetSearchClick}>Reset Search</button>
       </div>
       <br />
       <br />
