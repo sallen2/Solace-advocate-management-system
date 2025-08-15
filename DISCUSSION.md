@@ -66,8 +66,6 @@ Improved advocates search functionality by extracting filter logic and replacing
 - Improved type safety with TypeScript
 - React best practices (no direct DOM manipulation)
 - Case-insensitive search functionality
-  <<<<<<< HEAD
-  =======
 
 #### Extracted Data Fetching Logic
 
@@ -86,4 +84,3 @@ Refactored API data fetching by extracting fetch logic from useEffect into a ded
 - Modern JavaScript best practices
 - Reusable fetch function for future needs
 - Improved code readability and maintainability
-  > > > > > > > e0f055c ( refactor: extract data fetching logic with async/await and error)
