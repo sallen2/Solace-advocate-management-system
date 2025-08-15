@@ -1,0 +1,49 @@
+# Project Discussion
+
+## Development Approach & Reflection
+
+### Developer Experience & Code Quality Focus
+
+When working on this assignment, I prioritized developer experience and code quality as core principles. My approach centered on two key questions:
+
+1. **What are we trying to accomplish?** - Ensuring clear intent and purpose in every code change
+2. **Would a new engineer be able to get up and running quickly?** - Focusing on onboarding ease and code comprehension
+
+The goal was to create code that not only functions well but also makes sense to future team members who might inherit or contribute to this project.
+
+### Git Workflow & Team Collaboration
+
+I structured my development process around realistic team workflows, considering how development might function at Solace. All work was completed from a `develop` branch to simulate a proper git flow strategy that would support:
+
+- Feature branch development
+- Code review processes
+- Safe integration practices
+- Production deployment workflows
+
+This approach demonstrates awareness of collaborative development practices and maintains clean project history.
+
+### AI Tool Usage
+
+I utilized AI assistance strategically throughout this project, primarily for:
+
+- **Documentation**: Generating clear, comprehensive documentation and discussion notes
+- **Git commit messages**: Creating consistent, descriptive commit messages following conventional standards
+- **PR descriptions**: Crafting detailed pull request descriptions that explain changes and benefits
+- **Code improvements**: Some code refactoring and optimization tasks
+
+The majority of architectural decisions, design choices, and core development logic were driven by my own analysis and experience, with AI serving as a productivity tool for documentation and consistency.
+
+## Database Tools
+
+### Adminer Database Viewer
+
+Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
+
+**Access:** http://localhost:8080 after `docker compose up`
+
+**Connection:**
+- System: PostgreSQL
+- Server: db
+- Username: postgres
+- Password: password
+- Database: solaceassignment
