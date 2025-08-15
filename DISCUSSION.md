@@ -1,6 +1,5 @@
 # Project Discussion
 
-<<<<<<< HEAD
 ## Development Approach & Reflection
 
 ### Developer Experience & Code Quality Focus
@@ -33,8 +32,6 @@ The majority of architectural decisions, design choices, and core development lo
 
 ## Database Tools
 
-=======
->>>>>>> e0f055c (  refactor: extract data fetching logic with async/await and error)
 ### Adminer Database Viewer
 
 Added Adminer to docker-compose.yml so dev team can easily view the PostgreSQL database in the browser.
@@ -69,8 +66,8 @@ Improved advocates search functionality by extracting filter logic and replacing
 - Improved type safety with TypeScript
 - React best practices (no direct DOM manipulation)
 - Case-insensitive search functionality
-<<<<<<< HEAD
-=======
+  <<<<<<< HEAD
+  =======
 
 #### Extracted Data Fetching Logic
 
@@ -89,4 +86,4 @@ Refactored API data fetching by extracting fetch logic from useEffect into a ded
 - Modern JavaScript best practices
 - Reusable fetch function for future needs
 - Improved code readability and maintainability
->>>>>>> e0f055c (  refactor: extract data fetching logic with async/await and error)
+  > > > > > > > e0f055c ( refactor: extract data fetching logic with async/await and error)
