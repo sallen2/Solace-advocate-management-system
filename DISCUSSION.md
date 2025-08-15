@@ -47,6 +47,7 @@ The following enhancements would further improve the application's quality and u
 
 - More visual flair with subtle animations and micro-interactions
 - Implement semantic HTML elements (header, nav, main, section, article, aside, footer) for better accessibility
+- Format phone numbers for better readability (e.g., (555) 123-4567)
 
 ### Adminer Database Viewer
 
