@@ -8,14 +8,26 @@ export default function Home() {
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Fetch available advocates from the API
+  const fetchAvailableAdvocates = async (): Promise<void> => {
+    try {
+      const response = await fetch("/api/advocates");
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch advocates: ${response.status}`);
+      }
+      
+      const jsonResponse = await response.json();
+      setAdvocates(jsonResponse.data);
+      setFilteredAdvocates(jsonResponse.data);
+    } catch (error) {
+      console.error("Error fetching advocates:", error);
+      // Could add error state here in the future
+    }
+  };
+
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    fetchAvailableAdvocates();
   }, []);
 
   // Filter function to check if an advocate matches the search term
@@ -50,8 +62,7 @@ export default function Home() {
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
-    console.log(advocates);
+  const handleResetSearchClick = () => {
     setFilteredAdvocates(advocates);
   };
 
@@ -69,7 +80,7 @@ export default function Home() {
           style={{ border: "1px solid black" }}
           onChange={handleFilteringAdvocates}
         />
-        <button onClick={onClick}>Reset Search</button>
+        <button onClick={handleResetSearchClick}>Reset Search</button>
       </div>
       <br />
       <br />
