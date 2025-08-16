@@ -12,81 +12,155 @@ interface AdvocatesApiResponse {
   };
 }
 
+interface ParsedRequestParams {
+  searchTerm: string | null;
+  limit: number;
+  cursor: number;
+}
+
+function parseRequestParameters(request: Request): ParsedRequestParams {
+  const { searchParams } = new URL(request.url);
+  const searchTerm = searchParams.get("search");
+  const limitParam = searchParams.get("limit");
+  const cursorParam = searchParams.get("cursor");
+
+  return {
+    searchTerm,
+    limit: limitParam ? parseInt(limitParam, 10) : 20,
+    cursor: cursorParam ? parseInt(cursorParam, 10) : 0,
+  };
+}
+
+function createSearchPattern(searchTerm: string): string {
+  return `%${searchTerm.toLowerCase()}%`;
+}
+
+function buildSearchConditions(searchTerm: string | null) {
+  if (!searchTerm || !searchTerm.trim()) {
+    return null;
+  }
+
+  const searchPattern = createSearchPattern(searchTerm);
+
+  return or(
+    ilike(advocates.firstName, searchPattern),
+    ilike(advocates.lastName, searchPattern),
+    ilike(advocates.city, searchPattern),
+    ilike(advocates.degree, searchPattern),
+    sql`lower(${advocates.specialties}::text) like ${searchPattern}`
+  );
+}
+
+function buildCursorCondition(cursor: number) {
+  return cursor > 0 ? gt(advocates.id, cursor) : null;
+}
+
+async function queryAdvocatesFromDatabase(
+  searchTerm: string | null,
+  cursor: number,
+  limit: number
+) {
+  let query = db.select().from(advocates);
+
+  const conditions = [];
+
+  const cursorCondition = buildCursorCondition(cursor);
+  if (cursorCondition) {
+    conditions.push(cursorCondition);
+  }
+
+  const searchConditions = buildSearchConditions(searchTerm);
+  if (searchConditions) {
+    conditions.push(searchConditions);
+  }
+
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions));
+  }
+
+  return await query.orderBy(advocates.id).limit(limit + 1);
+}
+
+function processQueryResults(
+  rawData: any[],
+  limit: number
+): {
+  hasMore: boolean;
+  actualData: any[];
+  nextCursor?: number;
+} {
+  const hasMore = rawData.length > limit;
+  const actualData = hasMore ? rawData.slice(0, limit) : rawData;
+  const nextCursor =
+    actualData.length > 0 ? actualData[actualData.length - 1].id : undefined;
+
+  return { hasMore, actualData, nextCursor };
+}
+
+function transformToAdvocateData(rawData: any[]): Advocate[] {
+  return rawData.map((advocate: any) => ({
+    ...advocate,
+    specialties: advocate.specialties as string[],
+  }));
+}
+
+function createAdvocatesResponse(
+  advocateData: Advocate[],
+  hasMore: boolean,
+  nextCursor: number | undefined,
+  limit: number
+): AdvocatesApiResponse {
+  return {
+    data: advocateData,
+    pagination: {
+      hasMore,
+      nextCursor: hasMore ? nextCursor : undefined,
+      limit,
+    },
+  };
+}
+
+function createEmptyResponse(limit: number): AdvocatesApiResponse {
+  return {
+    data: [],
+    pagination: { hasMore: false, limit },
+  };
+}
+
 export async function GET(request: Request): Promise<Response> {
   try {
-    const { searchParams } = new URL(request.url);
-    const searchTerm = searchParams.get('search');
-    const limitParam = searchParams.get('limit');
-    const cursorParam = searchParams.get('cursor');
+    // Parse and validate request parameters
+    const { searchTerm, limit, cursor } = parseRequestParameters(request);
 
-    // Parse pagination parameters
-    const limit = limitParam ? parseInt(limitParam, 10) : 20;
-    const cursor = cursorParam ? parseInt(cursorParam, 10) : 0;
-
-    // Check if database is properly configured
+    // Handle database connection failure
     if (!process.env.DATABASE_URL) {
-      return Response.json({ 
-        data: [], 
-        pagination: { hasMore: false, limit }
-      } satisfies AdvocatesApiResponse);
+      return Response.json(createEmptyResponse(limit));
     }
 
-    let query = db.select().from(advocates);
+    // Query advocates from database with search and pagination
+    const rawAdvocateData = await queryAdvocatesFromDatabase(
+      searchTerm,
+      cursor,
+      limit
+    );
 
-    // Build conditions array
-    const conditions = [];
+    // Process results and determine pagination info
+    const { hasMore, actualData, nextCursor } = processQueryResults(
+      rawAdvocateData,
+      limit
+    );
 
-    // Add cursor condition
-    if (cursor > 0) {
-      conditions.push(gt(advocates.id, cursor));
-    }
+    // Transform raw data to properly typed Advocate objects
+    const advocateData = transformToAdvocateData(actualData);
 
-    // Add search conditions
-    if (searchTerm && searchTerm.trim()) {
-      const searchPattern = `%${searchTerm.toLowerCase()}%`;
-      
-      conditions.push(
-        or(
-          ilike(advocates.firstName, searchPattern),
-          ilike(advocates.lastName, searchPattern),
-          ilike(advocates.city, searchPattern),
-          ilike(advocates.degree, searchPattern),
-          sql`lower(${advocates.specialties}::text) like ${searchPattern}`
-        )
-      );
-    }
-
-    // Apply conditions with AND
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    // Order by ID and apply limit (+1 to check if there are more records)
-    const rawAdvocateData = await query
-      .orderBy(advocates.id)
-      .limit(limit + 1);
-    
-    // Check if there are more records
-    const hasMore = rawAdvocateData.length > limit;
-    const actualData = hasMore ? rawAdvocateData.slice(0, limit) : rawAdvocateData;
-    
-    // Get the next cursor (ID of the last item)
-    const nextCursor = actualData.length > 0 ? actualData[actualData.length - 1].id : undefined;
-
-    // Transform the data to ensure proper typing for specialties field
-    const advocateData: Advocate[] = actualData.map((advocate: any) => ({
-      ...advocate,
-      specialties: advocate.specialties as string[]
-    }));
-
-    return Response.json({ 
-      data: advocateData,
-      pagination: {
-        hasMore,
-        nextCursor: hasMore ? nextCursor : undefined,
-        limit
-      }
-    } satisfies AdvocatesApiResponse);
+    // Create and return the API response
+    const response = createAdvocatesResponse(
+      advocateData,
+      hasMore,
+      nextCursor,
+      limit
+    );
+    return Response.json(response);
   } catch (error) {
     console.error("Error fetching advocates:", error);
     return Response.json(
