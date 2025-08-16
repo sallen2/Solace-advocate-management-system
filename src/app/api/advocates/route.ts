@@ -1,4 +1,4 @@
-import { or, ilike, sql, gt } from "drizzle-orm";
+import { or, ilike, sql, gt, and } from "drizzle-orm";
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
 import { Advocate } from "../../../types/advocate";
@@ -33,11 +33,19 @@ export async function GET(request: Request): Promise<Response> {
 
     let query = db.select().from(advocates);
 
-    // Add search conditions if provided
+    // Build conditions array
+    const conditions = [];
+
+    // Add cursor condition
+    if (cursor > 0) {
+      conditions.push(gt(advocates.id, cursor));
+    }
+
+    // Add search conditions
     if (searchTerm && searchTerm.trim()) {
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
       
-      query = query.where(
+      conditions.push(
         or(
           ilike(advocates.firstName, searchPattern),
           ilike(advocates.lastName, searchPattern),
@@ -48,9 +56,9 @@ export async function GET(request: Request): Promise<Response> {
       );
     }
 
-    // Add cursor-based pagination
-    if (cursor > 0) {
-      query = query.where(gt(advocates.id, cursor));
+    // Apply conditions with AND
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
     }
 
     // Order by ID and apply limit (+1 to check if there are more records)
