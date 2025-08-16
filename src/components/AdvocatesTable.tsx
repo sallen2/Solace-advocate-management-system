@@ -1,4 +1,5 @@
 import { Advocate } from "../types/advocate";
+import { formatPhoneNumber } from "../utils/formatPhone";
 
 interface AdvocatesTableProps {
   advocates: Advocate[];
@@ -28,7 +29,7 @@ export default function AdvocatesTable({ advocates }: AdvocatesTableProps) {
             <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
               Years of Experience
             </th>
-            <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">
+            <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
               Phone Number
             </th>
           </tr>
@@ -62,8 +63,8 @@ export default function AdvocatesTable({ advocates }: AdvocatesTableProps) {
                 <td className="border border-gray-300 px-4 py-3 text-sm">
                   {advocate.yearsOfExperience}
                 </td>
-                <td className="border border-gray-300 px-4 py-3 text-sm">
-                  {advocate.phoneNumber}
+                <td className="border border-gray-300 px-4 py-3 text-sm whitespace-nowrap">
+                  {formatPhoneNumber(advocate.phoneNumber)}
                 </td>
               </tr>
             );
