@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import AdvocatesTable from "../components/AdvocatesTable";
-import SearchInput from "../components/SearchInput";
+import AdvocatesList from "../components/AdvocatesList";
+import AdvocateSearch from "../components/AdvocateSearch";
+import PageHeader from "../components/PageHeader";
+import ErrorMessage from "../components/ErrorMessage";
 import { useDebounce } from "../hooks/useDebounce";
 import { useAdvocatesInfiniteScroll } from "../hooks/useInfiniteScroll";
 
@@ -28,27 +30,28 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto px-6 py-8 max-w-6xl">
-      <h1 className="text-3xl font-bold text-center mb-8">Solace Advocates</h1>
+    <main className="min-h-screen bg-white">
+      <section className="container mx-auto px-6 py-12 max-w-6xl flex flex-col gap-8">
+        <PageHeader 
+          title="Solace Advocate Search"
+          subtitle="Discover and connect with our community of health advocates"
+        />
 
-      <SearchInput
-        searchTerm={searchTerm}
-        onSearchChange={handleFilteringAdvocates}
-        onResetSearch={handleResetSearchClick}
-      />
+        <AdvocateSearch
+          searchTerm={searchTerm}
+          onSearchChange={handleFilteringAdvocates}
+          onResetSearch={handleResetSearchClick}
+        />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          Error: {error}
-        </div>
-      )}
+        <ErrorMessage error={error} />
 
-      <AdvocatesTable
-        advocates={advocates}
-        loading={loading}
-        hasMore={hasMore}
-        onLoadMore={loadMoreAdvocates}
-      />
+        <AdvocatesList
+          advocates={advocates}
+          loading={loading}
+          hasMoreAdvocates={hasMore}
+          onLoadMore={loadMoreAdvocates}
+        />
+      </section>
     </main>
   );
 }
