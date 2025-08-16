@@ -1,45 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Advocate } from "../types/advocate";
+import { useState } from "react";
 import AdvocatesTable from "../components/AdvocatesTable";
 import SearchInput from "../components/SearchInput";
 import { useDebounce } from "../hooks/useDebounce";
+import { useAdvocatesInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  
+
   // Debounce the search term with 300ms delay
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Fetch available advocates from the API
-  const fetchAvailableAdvocates = async (search?: string): Promise<void> => {
-    try {
-      const searchParams = search ? `?search=${encodeURIComponent(search)}` : '';
-      const response = await fetch(`/api/advocates${searchParams}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch advocates: ${response.status}`);
-      }
-
-      const jsonResponse = await response.json();
-      setAdvocates(jsonResponse.data);
-    } catch (error) {
-      console.error("Error fetching advocates:", error);
-      // Could add error state here in the future
-    }
-  };
-
-  // Initial load of advocates
-  useEffect(() => {
-    fetchAvailableAdvocates();
-  }, []);
-
-  // Fetch advocates when debounced search term changes
-  useEffect(() => {
-    fetchAvailableAdvocates(debouncedSearchTerm);
-  }, [debouncedSearchTerm]);
+  // Use advocates infinite scroll hook
+  const { advocates, loading, hasMore, loadMoreAdvocates, error } =
+    useAdvocatesInfiniteScroll({
+      searchTerm: debouncedSearchTerm,
+      limit: 10,
+    });
 
   const handleFilteringAdvocates = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -59,7 +37,18 @@ export default function Home() {
         onResetSearch={handleResetSearchClick}
       />
 
-      <AdvocatesTable advocates={advocates} />
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          Error: {error}
+        </div>
+      )}
+
+      <AdvocatesTable
+        advocates={advocates}
+        loading={loading}
+        hasMore={hasMore}
+        onLoadMore={loadMoreAdvocates}
+      />
     </main>
   );
 }

@@ -1,50 +1,84 @@
-import { or, ilike, sql } from "drizzle-orm";
+import { or, ilike, sql, gt } from "drizzle-orm";
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
 import { Advocate } from "../../../types/advocate";
 
 interface AdvocatesApiResponse {
   data: Advocate[];
+  pagination: {
+    hasMore: boolean;
+    nextCursor?: number;
+    limit: number;
+  };
 }
 
 export async function GET(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
     const searchTerm = searchParams.get('search');
+    const limitParam = searchParams.get('limit');
+    const cursorParam = searchParams.get('cursor');
+
+    // Parse pagination parameters
+    const limit = limitParam ? parseInt(limitParam, 10) : 20;
+    const cursor = cursorParam ? parseInt(cursorParam, 10) : 0;
 
     // Check if database is properly configured
     if (!process.env.DATABASE_URL) {
-      return Response.json({ data: [] } satisfies AdvocatesApiResponse);
+      return Response.json({ 
+        data: [], 
+        pagination: { hasMore: false, limit }
+      } satisfies AdvocatesApiResponse);
     }
 
-    let rawAdvocateData;
+    let query = db.select().from(advocates);
 
+    // Add search conditions if provided
     if (searchTerm && searchTerm.trim()) {
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
       
-      rawAdvocateData = await db
-        .select()
-        .from(advocates)
-        .where(
-          or(
-            ilike(advocates.firstName, searchPattern),
-            ilike(advocates.lastName, searchPattern),
-            ilike(advocates.city, searchPattern),
-            ilike(advocates.degree, searchPattern),
-            sql`lower(${advocates.specialties}::text) like ${searchPattern}`
-          )
-        );
-    } else {
-      rawAdvocateData = await db.select().from(advocates);
+      query = query.where(
+        or(
+          ilike(advocates.firstName, searchPattern),
+          ilike(advocates.lastName, searchPattern),
+          ilike(advocates.city, searchPattern),
+          ilike(advocates.degree, searchPattern),
+          sql`lower(${advocates.specialties}::text) like ${searchPattern}`
+        )
+      );
     }
+
+    // Add cursor-based pagination
+    if (cursor > 0) {
+      query = query.where(gt(advocates.id, cursor));
+    }
+
+    // Order by ID and apply limit (+1 to check if there are more records)
+    const rawAdvocateData = await query
+      .orderBy(advocates.id)
+      .limit(limit + 1);
     
+    // Check if there are more records
+    const hasMore = rawAdvocateData.length > limit;
+    const actualData = hasMore ? rawAdvocateData.slice(0, limit) : rawAdvocateData;
+    
+    // Get the next cursor (ID of the last item)
+    const nextCursor = actualData.length > 0 ? actualData[actualData.length - 1].id : undefined;
+
     // Transform the data to ensure proper typing for specialties field
-    const advocateData: Advocate[] = rawAdvocateData.map((advocate: any) => ({
+    const advocateData: Advocate[] = actualData.map((advocate: any) => ({
       ...advocate,
       specialties: advocate.specialties as string[]
     }));
 
-    return Response.json({ data: advocateData } satisfies AdvocatesApiResponse);
+    return Response.json({ 
+      data: advocateData,
+      pagination: {
+        hasMore,
+        nextCursor: hasMore ? nextCursor : undefined,
+        limit
+      }
+    } satisfies AdvocatesApiResponse);
   } catch (error) {
     console.error("Error fetching advocates:", error);
     return Response.json(
