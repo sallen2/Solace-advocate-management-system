@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import { Advocate } from "../types/advocate";
 import AdvocatesTable from "../components/AdvocatesTable";
 import SearchInput from "../components/SearchInput";
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  
+  // Debounce the search term with 300ms delay
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Fetch available advocates from the API
   const fetchAvailableAdvocates = async (search?: string): Promise<void> => {
@@ -27,18 +31,15 @@ export default function Home() {
     }
   };
 
+  // Initial load of advocates
   useEffect(() => {
     fetchAvailableAdvocates();
   }, []);
 
-  // Debounced search effect
+  // Fetch advocates when debounced search term changes
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      fetchAvailableAdvocates(searchTerm);
-    }, 300);
-
-    return () => clearTimeout(debounceTimer);
-  }, [searchTerm]);
+    fetchAvailableAdvocates(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   const handleFilteringAdvocates = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
