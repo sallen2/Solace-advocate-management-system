@@ -4,11 +4,14 @@ import postgres from "postgres";
 const setup = () => {
   if (!process.env.DATABASE_URL) {
     console.error("DATABASE_URL is not set");
+    // Return a mock that matches the Drizzle API structure
     return {
       select: () => ({
-        from: () => [],
+        from: () => ({
+          where: () => Promise.resolve([]),
+        }),
       }),
-    };
+    } as any;
   }
 
   // for query purposes
